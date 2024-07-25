@@ -1,9 +1,6 @@
 import pytest
 from main import BooksCollector
 
-@pytest.fixture
-def collector():
-    return BooksCollector()
 
 class TestBooksCollector:
 
@@ -12,14 +9,17 @@ class TestBooksCollector:
         collector.add_new_book('Что делать если ваш кот хочет вас убить')
         assert len(collector.get_books_genre()) == 2
 
-    @pytest.mark.parametrize("book_name", [
-        'Гордость и предубеждение и зомби',
-        'Что делать если ваш кот хочет вас убить'
+    @pytest.mark.parametrize("book_name, expected_length", [
+        ('', 0),
+        ('a' * 41, 0),
+        ('a' * 42, 0),
+        ('a' * 50, 0),
+        ('a', 1),
+        ('a' * 40, 1)
     ])
-    def test_add_new_book_too_long_name(self, collector, book_name):
-        long_name = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
-        collector.add_new_book(long_name)
-        assert len(collector.get_books_genre()) == 0
+    def test_add_new_book_name_length(self, collector, book_name, expected_length):
+        collector.add_new_book(book_name)
+        assert len(collector.get_books_genre()) == expected_length
 
     def test_set_book_genre(self, collector):
         collector.add_new_book('Гордость и предубеждение и зомби')
